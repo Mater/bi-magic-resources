@@ -1,5 +1,4 @@
 import React from 'react';
-import { Theme, presetGpnDefault } from '@consta/uikit/Theme';
 import { Bar } from '@consta/charts/Bar';
 
 const BarChart = () => {
@@ -12,21 +11,16 @@ const BarChart = () => {
   ];
 
   return (
-    <Theme preset={presetGpnDefault}>
-      <div>
-        <Bar
-          style={{
-            marginBottom: 'var(--space-m)',
-            maxWidth: 300,
-            maxHeight: 200,
-          }}
-          data={dataSimple}
-          xField="number"
-          yField="parameter"
-        />
-      </div>
-      <div></div>
-    </Theme>
+    <Bar
+      style={{
+        marginBottom: 'var(--space-m)',
+        maxWidth: 300,
+        maxHeight: 200,
+      }}
+      data={dataSimple}
+      xField="number"
+      yField="parameter"
+    />
   );
 };
 
