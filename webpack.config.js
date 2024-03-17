@@ -68,6 +68,7 @@ module.exports = {
   externals: {
     'react': 'react',
     'react-dom': 'react-dom',
+    'react-dom/client': 'react-dom',
     'classnames': 'classnames',
     //'jquery': 'jquery',
     'axios': 'axios',
@@ -131,11 +132,13 @@ module.exports = {
           publicPath: 'srv/resources/',
           filename: function(data, assetInfo) {
             let resourcePath = data.filename.split(path.sep);
-            if (resourcePath[0] !== 'src') throw new Error('Cannot get image outside ot src', resourcePath);
+            // if (resourcePath[0] !== 'src') throw new Error('Cannot get image outside ot src', resourcePath);
             resourcePath = resourcePath.slice(1);
 
-            const schema_name = resourcePath[0];
-            if (!schema_name.startsWith('ds_')) throw new Error('Cannot get image outside ot schema', resourcePath);
+            let schema_name = resourcePath[0];
+            if (schema_name || !schema_name.startsWith('ds_')) {
+              schema_name = 'ds_res';
+            };
             resourcePath = resourcePath.slice(1);
 
             return path.join(schema_name, ...resourcePath);

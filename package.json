@@ -41,9 +41,23 @@
   },
   "homepage": "https://gito.luxms.com/luxmsbi/luxmsbi-web-internal",
   "dependencies": {
+    "@antv/g2plot": "^2.4.31",
+    "@bem-react/classname": "^1.6.0",
+    "@bem-react/classnames": "^1.3.10",
+    "@consta/charts": "1.0.0",
+    "@consta/icons": "^1.0.0",
+    "@consta/uikit": "^5.0.0",
+    "compute-scroll-into-view": "^1.0.17",
+    "date-fns": "^2.30.0",
     "format-number-with-string": "^0.0.2",
     "iscroll": "^5.2.0",
-    "jquery": "^3.6.0"
+    "jquery": "^3.6.0",
+    "react": "16.8.0",
+    "react-dom": "16.8.0",
+    "react-dropzone": "11.3.4",
+    "react-imask": "^7.2.1",
+    "react-textarea-autosize": "^8.5.3",
+    "react-transition-group": "^4.4.5"
   },
   "optionalDependencies": {
     "node-expose-sspi": "^0.1.60"

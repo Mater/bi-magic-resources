@@ -1,4 +1,6 @@
 {
+  "include": "ds_12",
+  "noRemove": true,
   "port": 3003,
   "server": "https://cronit7.class.luxmsbi.com/"
 }
