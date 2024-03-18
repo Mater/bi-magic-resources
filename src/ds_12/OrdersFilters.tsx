@@ -6,13 +6,12 @@ const Theme = ConstaTheme as any;
 
 import './OrdersFilters.css';
 import { OrdersFiltersService } from '../services/OrdersFiltersService';
+import { useDimensionDefs } from './useDimensionDefs';
 
-const OrdersFilter = (props: IVizelProps) => {
-  const {
-    cfg: {
-      dataSource: { koob, dimensions = [] },
-    },
-  } = props;
+const OrdersFilter = ({ cfg: { dataSource } }: IVizelProps) => {
+  const { koob = '', dimensions = [] } = dataSource || {};
+
+  const dimensionDefs = useDimensionDefs(koob, dimensions);
 
   const ordersFiltersService = useServiceItself<OrdersFiltersService>(
     OrdersFiltersService,
@@ -24,28 +23,26 @@ const OrdersFilter = (props: IVizelProps) => {
     loading,
     dimensions: dimensionsDictionary,
     filters,
-  } = ordersFiltersService.getModel();
+  } = ordersFiltersService?.getModel() || {};
 
-  if (loading) {
+  if (ordersFiltersService && loading) {
     return undefined;
   }
 
   return (
     <Theme preset={presetGpnDefault}>
       <div className="filters-container">
-        {dimensions.map((dimension) => (
+        {dimensionDefs.map(({ id, title }) => (
           <Combobox
-            label={dimension}
+            label={title}
             size="m"
             multiple
             selectAll
-            items={dimensionsDictionary[dimension]}
-            value={filters[dimension]}
+            items={dimensionsDictionary[id]}
+            value={filters[id]}
             getItemKey={(item) => item}
             getItemLabel={(item) => item}
-            onChange={(values) =>
-              ordersFiltersService.updateFilter(dimension, values)
-            }
+            onChange={(values) => ordersFiltersService.updateFilter(id, values)}
           />
         ))}
       </div>
