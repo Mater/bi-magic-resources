@@ -58,9 +58,7 @@ export class OrdersFiltersService extends BaseService<IOrdersFiltersModel> {
   }
 
   public updateFilter(dimension: string, values: any[]) {
-    console.log(this._model);
-
-    this._updateWithData({
+    this._updateModel({
       filters: {
         ...this._model.filters,
         [dimension]: values,
