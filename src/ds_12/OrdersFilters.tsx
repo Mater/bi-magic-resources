@@ -6,20 +6,18 @@ const Theme = ConstaTheme as any;
 
 import './OrdersFilters.css';
 import { OrdersFiltersService } from '../services/OrdersFiltersService';
-import { useDimensionDefs } from './useDimensionDefs';
 
-const OrdersFilter = ({ cfg: { dataSource } }: IVizelProps) => {
-  const { koob, dimensions } = dataSource || {};
-
-  const dimensionDefs = useDimensionDefs(koob, dimensions);
-
+const OrdersFilter = (props: IVizelProps) => {
+  const {
+    subspace: { koob, dimensions = [] },
+  } = props;
   const ordersFiltersService = useServiceItself<OrdersFiltersService>(
     OrdersFiltersService,
     koob
   );
 
   useEffect(() => {
-    ordersFiltersService.updateDimensions(dimensions);
+    ordersFiltersService.updateDimensions(dimensions.map(({ id }) => id));
   }, [ordersFiltersService, dimensions]);
 
   const {
@@ -36,7 +34,7 @@ const OrdersFilter = ({ cfg: { dataSource } }: IVizelProps) => {
   return (
     <Theme preset={presetGpnDefault}>
       <div className="filters-container">
-        {dimensionDefs.map(({ id, title }) => (
+        {dimensions.map(({ id, title }) => (
           <Combobox
             label={title}
             size="m"

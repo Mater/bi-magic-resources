@@ -1,22 +1,28 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Bar } from '@consta/charts/Bar';
 import { IVizelProps, KoobDataService, useService } from 'bi-internal/services';
-import { useDimensionDefs } from './useDimensionDefs';
-import { useMeasureDefs } from './useMeasureDefs';
 import { OrdersFiltersService } from '../services/OrdersFiltersService';
 import { useFilterDefs } from './useFilterDefs';
+import { IKoobDimension } from 'bi-internal/defs/bi';
 
-const OrdersBar = ({ cfg: { dataSource } }: IVizelProps) => {
-  const { koob, dimensions, measures } = dataSource || {};
-
+const OrdersBar = ({
+  subspace: { dimensions = [], koob = '', measures = [] },
+}: IVizelProps) => {
   const { filters = {} } = useService<OrdersFiltersService>(
     OrdersFiltersService,
     koob
   );
 
-  const [dimensionDef] = useDimensionDefs(koob, dimensions);
-  const [measureDef] = useMeasureDefs(measures);
   const filterDefs = useFilterDefs(filters);
+  const yDimension: IKoobDimension = useMemo(() => {
+    const yDimensionNames = dimensions.map(({ id }) => id).join(', ') || '';
+    return {
+      id: `concatWithSeparator(' ', ${yDimensionNames}):y`,
+      sql: '',
+      title: '',
+      type: 'STRING',
+    };
+  }, []);
 
   const {
     loading,
@@ -25,12 +31,25 @@ const OrdersBar = ({ cfg: { dataSource } }: IVizelProps) => {
   } = useService<KoobDataService>(
     KoobDataService,
     koob,
-    [dimensionDef],
-    [measureDef],
+    [yDimension],
+    measures,
     filterDefs
   );
 
-  if (!dimensionDef || !measureDef || loading || error) {
+  const chartValues = useMemo(
+    () =>
+      measures.flatMap(
+        ({ id, title }) =>
+          values?.map((value) => ({
+            y: value.y,
+            x: value[id],
+            series: title,
+          })) || []
+      ),
+    [values, measures]
+  );
+
+  if (loading || error) {
     return undefined;
   }
 
@@ -40,9 +59,11 @@ const OrdersBar = ({ cfg: { dataSource } }: IVizelProps) => {
         marginBottom: '20px',
         padding: '20px',
       }}
-      data={values}
-      xField="value"
-      yField={dimensionDef.id}
+      data={chartValues}
+      xField="x"
+      yField="y"
+      seriesField="series"
+      isGroup
     />
   );
 };
