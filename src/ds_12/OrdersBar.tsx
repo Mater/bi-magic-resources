@@ -1,40 +1,32 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { Bar } from '@consta/charts/Bar';
-import {
-  IVizelProps,
-  KoobDataService,
-  KoobService,
-  useService,
-} from 'bi-internal/services';
+import { IVizelProps, KoobDataService, useService } from 'bi-internal/services';
 import { useDimensionDefs } from './useDimensionDefs';
+import { useMeasureDefs } from './useMeasureDefs';
+import { OrdersFiltersService } from '../services/OrdersFiltersService';
+import { useFilterDefs } from './useFilterDefs';
 
 const OrdersBar = ({ cfg: { dataSource } }: IVizelProps) => {
-  const { koob = '', dimensions = [], measures = [] } = dataSource || {};
+  const { koob, dimensions, measures } = dataSource || {};
 
-  // const { filters } = useService<OrdersFiltersService>(
-  //   OrdersFiltersService,
-  //   koob
-  // );
-
-  const dimensionDefs = useDimensionDefs(koob, dimensions);
-
-  const { measures: measuresDefs } = useService<KoobService>(KoobService, koob);
-  const selectedMeasures = useMemo(
-    () => measuresDefs?.filter(({ id }) => measures.includes(id)) || [],
-    [dimensionDefs, dimensions]
+  const { filters = {} } = useService<OrdersFiltersService>(
+    OrdersFiltersService,
+    koob
   );
 
-  console.log(measures, measuresDefs, selectedMeasures);
+  const dimensionDefs = useDimensionDefs(koob, dimensions);
+  const measureDefs = useMeasureDefs(measures);
+  const filterDefs = useFilterDefs(filters);
 
   const { values } = useService<KoobDataService>(
     KoobDataService,
     koob,
     dimensionDefs,
-    measures.map((formula) => ({ formula })),
-    {}
+    measureDefs,
+    filterDefs
   );
 
-  console.log(values);
+  console.log(filters, filterDefs);
 
   return (
     <Bar

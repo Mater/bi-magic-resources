@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Theme as ConstaTheme, presetGpnDefault } from '@consta/uikit/Theme';
 import { Combobox } from '@consta/uikit/Combobox';
 import { IVizelProps, useServiceItself } from 'bi-internal/services';
@@ -9,23 +9,27 @@ import { OrdersFiltersService } from '../services/OrdersFiltersService';
 import { useDimensionDefs } from './useDimensionDefs';
 
 const OrdersFilter = ({ cfg: { dataSource } }: IVizelProps) => {
-  const { koob = '', dimensions = [] } = dataSource || {};
+  const { koob, dimensions } = dataSource || {};
 
   const dimensionDefs = useDimensionDefs(koob, dimensions);
 
   const ordersFiltersService = useServiceItself<OrdersFiltersService>(
     OrdersFiltersService,
-    koob,
-    dimensions
+    koob
   );
+
+  useEffect(() => {
+    ordersFiltersService.initializeDimensions(dimensions);
+  }, [ordersFiltersService, dimensions]);
 
   const {
     loading,
+    error,
     dimensions: dimensionsDictionary,
     filters,
-  } = ordersFiltersService?.getModel() || {};
+  } = ordersFiltersService.getModel();
 
-  if (ordersFiltersService && loading) {
+  if (loading || error) {
     return undefined;
   }
 

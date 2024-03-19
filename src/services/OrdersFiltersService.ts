@@ -15,7 +15,7 @@ interface IOrdersFiltersModel extends IBaseModel {
 export class OrdersFiltersService extends BaseService<IOrdersFiltersModel> {
   private readonly koob: string;
 
-  private constructor(koob: string = '', dimensions: string[] = []) {
+  private constructor(koob: string = '') {
     super({
       loading: true,
       error: null,
@@ -23,15 +23,13 @@ export class OrdersFiltersService extends BaseService<IOrdersFiltersModel> {
       dimensions: {},
     });
     this.koob = koob;
-
-    this.fetchData(koob, dimensions);
   }
 
-  private async fetchData(koob: string = '', dimensions: string[] = []) {
+  public async initializeDimensions(dimensions: string[] = []) {
     const { data } = await axios.post(
       AppConfig.fixRequestUrl('/api/v3/koob/data'),
       {
-        with: koob,
+        with: this.koob,
         columns: dimensions,
         filters: {},
         distinct: dimensions,
@@ -60,25 +58,19 @@ export class OrdersFiltersService extends BaseService<IOrdersFiltersModel> {
   public updateFilter(dimension: string, values: any[]) {
     this._updateModel({
       filters: {
-        ...this._model.filters,
+        ...this._model?.filters,
         [dimension]: values,
       },
     });
   }
 
-  public static createInstance(
-    koob: string,
-    dimensions: string[]
-  ): OrdersFiltersService {
+  public static createInstance(koob: string): OrdersFiltersService {
     if (!window.__ordersFiltersService) {
       window.__ordersFiltersService = {};
     }
 
     if (!window.__ordersFiltersService.hasOwnProperty(koob)) {
-      window.__ordersFiltersService[koob] = new OrdersFiltersService(
-        koob,
-        dimensions
-      );
+      window.__ordersFiltersService[koob] = new OrdersFiltersService(koob);
     }
 
     return window.__ordersFiltersService[koob];
