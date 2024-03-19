@@ -6,7 +6,8 @@ import { useFilterDefs } from './useFilterDefs';
 import { IKoobDimension } from 'bi-internal/defs/bi';
 
 const OrdersBar = ({
-  subspace: { dimensions = [], koob = '', measures = [] },
+  cfg,
+  subspace: { dimensions = [], koob = '', measures = [], ys = [] },
 }: IVizelProps) => {
   const { filters = {} } = useService<OrdersFiltersService>(
     OrdersFiltersService,
@@ -49,6 +50,11 @@ const OrdersBar = ({
     [values, measures]
   );
 
+  const color = useMemo(
+    () => ys.map((x, index) => cfg.getColor(x, null, index)),
+    [cfg, ys]
+  );
+
   if (loading || error) {
     return undefined;
   }
@@ -64,6 +70,7 @@ const OrdersBar = ({
       yField="y"
       seriesField="series"
       isGroup
+      color={color}
     />
   );
 };

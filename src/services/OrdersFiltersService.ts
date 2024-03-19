@@ -53,6 +53,7 @@ export class OrdersFiltersService extends BaseService<IOrdersFiltersModel> {
       }, {});
 
       this._updateWithData({
+        filters: {},
         dimensions: distinctDimensions,
       });
     } catch {

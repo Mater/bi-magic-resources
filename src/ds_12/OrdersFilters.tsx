@@ -7,10 +7,9 @@ const Theme = ConstaTheme as any;
 import './OrdersFilters.css';
 import { OrdersFiltersService } from '../services/OrdersFiltersService';
 
-const OrdersFilter = (props: IVizelProps) => {
-  const {
-    subspace: { koob, dimensions = [] },
-  } = props;
+const OrdersFilter = ({
+  subspace: { koob = '', dimensions = [] },
+}: IVizelProps) => {
   const ordersFiltersService = useServiceItself<OrdersFiltersService>(
     OrdersFiltersService,
     koob
@@ -36,6 +35,7 @@ const OrdersFilter = (props: IVizelProps) => {
       <div className="filters-container">
         {dimensions.map(({ id, title }) => (
           <Combobox
+            key={id}
             label={title}
             size="m"
             multiple
