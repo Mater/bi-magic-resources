@@ -14,19 +14,25 @@ const OrdersBar = ({ cfg: { dataSource } }: IVizelProps) => {
     koob
   );
 
-  const dimensionDefs = useDimensionDefs(koob, dimensions);
-  const measureDefs = useMeasureDefs(measures);
+  const [dimensionDef] = useDimensionDefs(koob, dimensions);
+  const [measureDef] = useMeasureDefs(measures);
   const filterDefs = useFilterDefs(filters);
 
-  const { values } = useService<KoobDataService>(
+  const {
+    loading,
+    error,
+    values = [],
+  } = useService<KoobDataService>(
     KoobDataService,
     koob,
-    dimensionDefs,
-    measureDefs,
+    [dimensionDef],
+    [measureDef],
     filterDefs
   );
 
-  console.log(filters, filterDefs);
+  if (!dimensionDef || !measureDef || loading || error) {
+    return undefined;
+  }
 
   return (
     <Bar
@@ -37,7 +43,7 @@ const OrdersBar = ({ cfg: { dataSource } }: IVizelProps) => {
       }}
       data={values}
       xField="sum_unitcost"
-      yField="emp_fio"
+      yField={dimensionDef.id}
     />
   );
 };
