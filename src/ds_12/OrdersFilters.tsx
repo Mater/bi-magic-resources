@@ -19,7 +19,7 @@ const OrdersFilter = ({ cfg: { dataSource } }: IVizelProps) => {
   );
 
   useEffect(() => {
-    ordersFiltersService.initializeDimensions(dimensions);
+    ordersFiltersService.updateDimensions(dimensions);
   }, [ordersFiltersService, dimensions]);
 
   const {

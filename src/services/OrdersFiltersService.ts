@@ -25,34 +25,39 @@ export class OrdersFiltersService extends BaseService<IOrdersFiltersModel> {
     this.koob = koob;
   }
 
-  public async initializeDimensions(dimensions: string[] = []) {
-    const { data } = await axios.post(
-      AppConfig.fixRequestUrl('/api/v3/koob/data'),
-      {
-        with: this.koob,
-        columns: dimensions,
-        filters: {},
-        distinct: dimensions,
+  public async updateDimensions(dimensions: string[] = []) {
+    this._updateWithLoading();
+
+    try {
+      const { data } = await axios.post(
+        AppConfig.fixRequestUrl('/api/v3/koob/data'),
+        {
+          with: this.koob,
+          columns: dimensions,
+          filters: {},
+          distinct: dimensions,
+        }
+      );
+
+      if (!Array.isArray(data)) {
+        throw new Error('No data');
       }
-    );
 
-    if (!Array.isArray(data)) {
+      const distinctDimensions = dimensions.reduce((dictionary, dimension) => {
+        return {
+          ...dictionary,
+          [dimension]: Array.from(
+            new Set(data.map((item) => item[dimension]))
+          ).sort(),
+        };
+      }, {});
+
+      this._updateWithData({
+        dimensions: distinctDimensions,
+      });
+    } catch {
       this._updateWithError('No data');
-      return;
     }
-
-    const distinctDimensions = dimensions.reduce((dictionary, dimension) => {
-      return {
-        ...dictionary,
-        [dimension]: Array.from(
-          new Set(data.map((item) => item[dimension]))
-        ).sort(),
-      };
-    }, {});
-
-    this._updateWithData({
-      dimensions: distinctDimensions,
-    });
   }
 
   public updateFilter(dimension: string, values: any[]) {
@@ -74,5 +79,11 @@ export class OrdersFiltersService extends BaseService<IOrdersFiltersModel> {
     }
 
     return window.__ordersFiltersService[koob];
+  }
+
+  // service disposed when editing dashlets, because it is not instance of BaseService
+  // temporary fix
+  public release(): boolean {
+    return false;
   }
 }

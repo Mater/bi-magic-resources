@@ -37,12 +37,11 @@ const OrdersBar = ({ cfg: { dataSource } }: IVizelProps) => {
   return (
     <Bar
       style={{
-        marginBottom: 'var(--space-m)',
-        maxWidth: 300,
-        maxHeight: 200,
+        marginBottom: '20px',
+        padding: '20px',
       }}
       data={values}
-      xField="sum_unitcost"
+      xField="value"
       yField={dimensionDef.id}
     />
   );
